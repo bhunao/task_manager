@@ -37,8 +37,18 @@ def days_diff(value: datetime):
         return "a few seconds ago"
 
 
+def yyyy_mm_dd(value: datetime):
+    return value.strftime('%Y-%m-%d')
+
+
+def hh_mm(value: datetime):
+    return value.strftime('%H:%M')
+
+
 # Register the custom filter
 templates.env.filters['days_diff'] = days_diff
+templates.env.filters['yyyy_mm_dd'] = yyyy_mm_dd
+templates.env.filters['hh_mm'] = hh_mm
 
 app.mount("/static", StaticFiles(directory="src/static/"), name="static")
 

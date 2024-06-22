@@ -18,13 +18,24 @@
 
     <div class="p-3">
 
-            <form class="mb-3 p-3 border" id="source-form" hx-post="/new" hx-trigger="submit" hx-swap="afterbegin" hx-target="#cards-list">
-    <h2>New Task</h2>
-        <div class="card rounded-0 my-2">
-            <div class="card-header">
-                    <small class="card-title">NAME:</small>
-                    <input type="text" name="name" class="form-control form-control-sm rounded-0" id="name" aria-describedby="nameHelp">
-            </div>
+        <form class="mb-3 p-3 border" id="source-form" hx-post="/new" hx-trigger="submit" hx-swap="afterbegin" hx-target="#cards-list">
+            <h2>New Task</h2>
+            <div class="card rounded-0 my-2">
+                <div class="card-header">
+
+                  <div class="row align-items-start">
+                    <div class="col col-4">
+                        <input type="text" placeholder="name..." name="name" class="form-control form-control-sm rounded-0" id="name" aria-describedby="nameHelp">
+                    </div>
+                    <div class="col col-4 text-center">
+                        <input type="date" id="start" name="trip-start" value=""/>
+                    </div>
+                    <div class="col col-4 text-end">
+                        some days...
+                    </div>
+              </div>
+
+
             <div class="card-body p-0">
 
                 <div class="bg-success-subtle p-2">
@@ -55,11 +66,11 @@
                             {{ task.name }}
                 </div>
                 <div class="col text-center">
-                            {{ task.date_created.hour }}:{{ task.date_created.minute }} - 
-                            {{ task.date_created.day }}/{{ task.date_created.month }}/{{ task.date_created.year }}
+                    <input disabled type="date" id="date_created" name="trip-start" value="{{ task.date_created | yyyy_mm_dd }}"/>
+                    <input disabled type="time" id="time_created" name="appt" value="{{ task.date_created | hh_mm }}"/>
                 </div>
                 <div class="col text-end">
-                            {{ task.date_created | days_diff }}
+                    {{ task.date_created | days_diff }}
                 </div>
               </div>
 
