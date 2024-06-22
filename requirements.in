@@ -1,0 +1,18 @@
+# app
+fastapi>=0.105.0,<0.106.0
+httpx==0.26.0
+pydantic>=1.8.0,<2.0.0
+uvicorn>=0.15.0,<0.16.0
+sqlmodel==0.0.18
+pytest==7.4.2
+python-jose[cryptography]==3.3.0
+passlib[bcrypt]==1.7.4
+python-multipart==0.0.6
+jinja2-fragments==1.2.1
+
+# db
+psycopg2-binary==2.9.9
+databases[postgresql]==0.4.2
+alembic==1.4.2
+
+# bussiness rules

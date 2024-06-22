@@ -1,0 +1,8 @@
+.accordion {
+/*     --bs-accordion-btn-bg: #e6eafd; */
+}
+
+tr.htmx-swapping td {
+  opacity: 0;
+  transition: opacity 1s ease-out;
+}

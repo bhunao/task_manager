@@ -1,0 +1,34 @@
+{% extends "base.html" %}
+    {% block task_card %}
+        <div class="card rounded-0 my-2">
+            <div class="card-header">
+
+              <div class="row align-items-start">
+                <div class="col">
+                            {{ task.name }}
+                </div>
+                <div class="col text-center">
+                            {{ task.date_created.hour }}:{{ task.date_created.minute }} - 
+                            {{ task.date_created.day }}/{{ task.date_created.month }}/{{ task.date_created.year }}
+                </div>
+                <div class="col text-end">
+                            {{ task.date_created | days_diff }}
+                </div>
+              </div>
+
+            </div>
+            <div class="card-body p-0">
+
+                <div class="bg-success-subtle p-2">
+                    <small class="card-title">DONE:</small>
+                    <p class="card-text">{{ task.done }}</p>
+                </div>
+                <hr class="m-1">
+                <div class="bg-primary-subtle p-2">
+                    <small class="card-title">TODO:</small>
+                    <p class="card-text">{{ task.todo }}</p>
+                </div>
+            </div>
+        </div>
+
+    {% endblock %}
