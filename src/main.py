@@ -16,11 +16,7 @@ from src.database import Database
 from src.models import Task
 
 
-app = FastAPI(
-    title="Task Manager",
-    version="0.0.1",
-    lifespan=lifespan
-)
+app = FastAPI(title="Task Manager", version="0.0.1", lifespan=lifespan)
 logger = logging.getLogger(__name__)
 
 
@@ -30,6 +26,11 @@ def days_diff(value: datetime):
     seconds = diff.total_seconds()
     if diff.days > 0:
         return f"{diff.days} days ago"
+    elif seconds // 60 > 60:
+        minutes = seconds // 60
+        hours = int(minutes // 60)
+        return f"{hours} hours ago"
+        return
     elif seconds > 120:
         minutes = int(seconds // 60)
         return f"{minutes} minutes ago"
@@ -38,17 +39,17 @@ def days_diff(value: datetime):
 
 
 def yyyy_mm_dd(value: datetime):
-    return value.strftime('%Y-%m-%d')
+    return value.strftime("%Y-%m-%d")
 
 
 def hh_mm(value: datetime):
-    return value.strftime('%H:%M')
+    return value.strftime("%H:%M")
 
 
 # Register the custom filter
-templates.env.filters['days_diff'] = days_diff
-templates.env.filters['yyyy_mm_dd'] = yyyy_mm_dd
-templates.env.filters['hh_mm'] = hh_mm
+templates.env.filters["days_diff"] = days_diff
+templates.env.filters["yyyy_mm_dd"] = yyyy_mm_dd
+templates.env.filters["hh_mm"] = hh_mm
 
 app.mount("/static", StaticFiles(directory="src/static/"), name="static")
 
@@ -59,7 +60,7 @@ async def new_task(
     name: str = Form(...),
     done: str = Form(...),
     todo: Optional[str] = Form(...),
-    session: Session = Depends(get_session)
+    session: Session = Depends(get_session),
 ) -> str:
     db = Database(session)
     new_task = Task(
@@ -76,11 +77,8 @@ async def new_task(
     )
 
 
-@ app.get("/", response_class=HTMLResponse)
-async def home(
-    request: Request,
-    session: Session = Depends(get_session)
-) -> str:
+@app.get("/", response_class=HTMLResponse)
+async def home(request: Request, session: Session = Depends(get_session)) -> str:
     db = Database(session)
     task_list = db.read_all(Task)[::-1]
     return templates.TemplateResponse(
