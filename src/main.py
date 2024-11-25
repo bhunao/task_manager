@@ -1,88 +1,65 @@
-import logging
+from contextlib import asynccontextmanager
+import datetime
+from fastapi import APIRouter, Depends, FastAPI
 
-from datetime import datetime
-
-from typing import Optional
-
-from fastapi import FastAPI, Depends, Request, Form
-from fastapi.responses import HTMLResponse
-from fastapi.staticfiles import StaticFiles
-from sqlmodel import Session
-
-from src.core.config import templates
-from src.core.database import get_session
-from src.core.dependencies import lifespan
-from src.database import Database
-from src.models import Task
+from sqlmodel import Field, SQLModel, Session, create_engine
 
 
-app = FastAPI(title="Task Manager", version="0.0.1", lifespan=lifespan)
-logger = logging.getLogger(__name__)
+engine = create_engine("sqlite:///database_dailywork")
 
 
-def days_diff(value: datetime):
-    today = datetime.today()
-    diff = today - value
-    seconds = diff.total_seconds()
-    if diff.days > 0:
-        return f"{diff.days} days ago"
-    elif seconds // 60 > 60:
-        minutes = seconds // 60
-        hours = int(minutes // 60)
-        return f"{hours} hours ago"
-        return
-    elif seconds > 120:
-        minutes = int(seconds // 60)
-        return f"{minutes} minutes ago"
-    else:
-        return "a few seconds ago"
+def get_session():
+    with Session(engine) as session:
+        SQLModel.metadata.create_all(engine)
+        yield session
 
 
-def yyyy_mm_dd(value: datetime):
-    return value.strftime("%Y-%m-%d")
+@asynccontextmanager
+async def lifespan_event(app: FastAPI):
+    assert app
+    yield
 
 
-def hh_mm(value: datetime):
-    return value.strftime("%H:%M")
+app = FastAPI(title="Daily Work")
+
+router = APIRouter()
 
 
-# Register the custom filter
-templates.env.filters["days_diff"] = days_diff
-templates.env.filters["yyyy_mm_dd"] = yyyy_mm_dd
-templates.env.filters["hh_mm"] = hh_mm
+class Work(SQLModel, table=True):
+    id: int | None = Field(primary_key=True, default=None)
+    date: (
+        datetime.date
+    )  # TODO: this field should auto transform from str to datetime.date
+    done: str
+    todo: str
 
-app.mount("/static", StaticFiles(directory="src/static/"), name="static")
-
-
-@app.post("/new", response_class=HTMLResponse)
-async def new_task(
-    request: Request,
-    name: str = Form(...),
-    done: str = Form(...),
-    todo: Optional[str] = Form(...),
-    session: Session = Depends(get_session),
-) -> str:
-    db = Database(session)
-    new_task = Task(
-        name=name,
-        done=done,
-        todo=todo,
-    )
-    task = db.create(new_task)
-    print("novo : ", task)
-    return templates.TemplateResponse(
-        "task_card.html",
-        {"request": request, "task": task},
-        block_name="task_card",
-    )
+    def convert_date_str_to_date(self):
+        if isinstance(self.date, str):
+            self.date = datetime.datetime.strptime(self.date, "%Y-%m-%d")
 
 
-@app.get("/", response_class=HTMLResponse)
-async def home(request: Request, session: Session = Depends(get_session)) -> str:
-    db = Database(session)
-    task_list = db.read_all(Task)[::-1]
-    return templates.TemplateResponse(
-        "task_card.html",
-        {"request": request, "task_list": task_list},
-        block_name=None,
-    )
+GetSession: Session = Depends(get_session)
+
+
+@router.get("/health_check")
+async def health_check():
+    try:
+        _session = get_session()
+        db_session = "connected"
+    except Exception as e:
+        db_session = e
+
+    return {"status": "ok", "database": db_session}
+
+
+@router.post("/new")
+async def save_new_work(record: Work, s: Session = GetSession):
+    record.convert_date_str_to_date()
+
+    s.add(record)
+    s.commit()
+    s.refresh(record)
+    return record
+
+
+app.include_router(router)
