@@ -1,11 +1,16 @@
 from contextlib import asynccontextmanager
 import datetime
-from fastapi import APIRouter, Depends, FastAPI
+from typing import Annotated
+from fastapi import APIRouter, Depends, FastAPI, Form, Request
 
+from fastapi.responses import HTMLResponse
 from sqlmodel import Field, SQLModel, Session, create_engine
+from jinja2_fragments.fastapi import Jinja2Blocks
 
 
 engine = create_engine("sqlite:///database_dailywork")
+
+templates = Jinja2Blocks(directory="templates")
 
 
 def get_session():
@@ -39,6 +44,29 @@ class Work(SQLModel, table=True):
 
 
 GetSession: Session = Depends(get_session)
+
+
+class FormData(SQLModel):
+    date: datetime.date
+    code: str
+    todo: str
+    done: str
+
+
+@router.get("/", response_class=HTMLResponse)
+async def read_index(request: Request):
+    return templates.TemplateResponse("base.html", {"request": request})
+
+
+@router.get("/new_test", response_class=HTMLResponse)
+async def read_index(request: Request):
+    return templates.TemplateResponse("create_work_form.html", {"request": request})
+
+
+@router.post("/test_form", response_class=HTMLResponse)
+async def test_form(request: Request, form_data: Annotated[FormData, Form()]):
+    assert request
+    return f"{'<br>'.join(f'{k}:{v}' for k, v in form_data.model_dump().items())} <hr>"
 
 
 @router.get("/health_check")
