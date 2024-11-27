@@ -1,0 +1,48 @@
+{% extends "base.html" %}
+  {% block body %}
+
+<form hx-post="/test_form" hx-target="#form-response" hx-swap="afterbegin">
+  <!-- Primeira linha -->
+  <div class="row g-3 pb-2">
+
+    <div class="col-sm-3">
+      <input class="form-control form-control-sm" type="date" name="date" placeholder=".form-control-lg" aria-label=".form-control-lg example">
+      <!-- <input type="date" class="form-control form-control-sm" id="date" name="date" required> -->
+    </div>
+
+
+    <div class="col-sm">
+      <input class="form-control form-control-sm" type="text" name="code" placeholder="task/tag" aria-label=".form-control-lg example">
+    </div>
+
+  </div>
+
+  <!-- Segunda linha -->
+  <div class="row g-3 pb-3">
+    <div class="col-sm">
+      <div class="form-floating">
+        <textarea class="form-control" id="exampleFormControlTextarea2" name="done" rows="10"></textarea>
+        <label class="form-label" for="exampleFormControlTextarea2">DONE</label>
+      </div>
+    </div>
+
+    <div class="col-sm">
+      <div class="form-floating">
+        <textarea class="form-control" id="exampleFormControlTextarea1" name="todo" rows="10"></textarea>
+        <label class="form-label" for="exampleFormControlTextarea1">TODO</label>
+      </div>
+    </div>
+  </div>
+
+  <!-- Botão de envio -->
+  <div class="row pb-3">
+    <div class="row">
+      <button type="submit" class="btn btn-primary">Submit</button>
+    </div>
+  </div>
+</form>
+
+<!-- Local onde a resposta será exibida -->
+<div id="form-response"></div>
+
+{% endblock %}
