@@ -77,8 +77,11 @@ SeessionDep: Session = Depends(get_session)
 
 
 @router.get("/", response_class=HTMLResponse)
-async def read_index(request: Request):
-    return templates.TemplateResponse("base.html", {"request": request})
+async def read_index(request: Request, s: Session = SeessionDep):
+    recordlist = await CRUD.get_all_works(s)
+    return templates.TemplateResponse(
+        "index.html", {"request": request, "recordlist": recordlist}
+    )
 
 
 @router.get("/new_test", response_class=HTMLResponse)
