@@ -1,0 +1,46 @@
+<div class="card mb-2"  hx-confirm="Are you sure?" hx-target="this" hx-swap="outerHTML swap:1s">
+  <form class="form-control">
+    <!-- Primeira linha -->
+    <div class="row g-3 pb-2">
+
+      <div class="col-sm-1">
+        <input class="form-control form-control-sm" type="text" name="id" value="{{ record.id }}" aria-label="date" disabled>
+      </div>
+
+      <div class="col-sm-3">
+        <input class="form-control form-control-sm" type="date" name="date" value="{{ record.date }}" aria-label="date" disabled>
+      </div>
+
+      <div class="col-sm">
+        <input class="form-control form-control-sm" value="{{ record.tag | default('no tag') }}" type="text" name="tag" placeholder="task/tag" aria-label="tag" disabled>
+      </div>
+
+      <div class="col-sm-2 text-end">
+
+
+        <button aria-label="delete" class="btn btn-danger" hx-delete="/work/{{ record.id }}">
+          <i class="bi bi-trash-fill"></i>
+        </button>
+      </div>
+
+    </div>
+
+    <!-- Segunda linha -->
+    <div class="row g-3 pb-3">
+      <div class="col-sm">
+        <div class="form-floating">
+          <textarea class="form-control" id="exampleFormControlTextarea2" name="done" rows="1" disabled>{{ record.done | e }}</textarea>
+          <label class="form-label" for="exampleFormControlTextarea2">DONE</label>
+        </div>
+      </div>
+
+      <div class="col-sm">
+        <div class="form-floating">
+          <textarea class="form-control" id="exampleFormControlTextarea1" name="todo" rows="1" disabled>{{ record.todo | e }}</textarea>
+          <label class="form-label" for="exampleFormControlTextarea1">TODO</label>
+        </div>
+      </div>
+    </div>
+
+  </form>
+</div>
