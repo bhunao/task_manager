@@ -4,11 +4,11 @@ from typing import Annotated
 from fastapi import APIRouter, Depends, FastAPI, Form, Request
 
 from fastapi.responses import HTMLResponse
-from sqlmodel import Field, SQLModel, Session, create_engine
+from sqlmodel import Field, SQLModel, Session, create_engine, desc, select
 from jinja2_fragments.fastapi import Jinja2Blocks
 
 
-engine = create_engine("sqlite:///database_dailywork")
+engine = create_engine("sqlite:///database_dailywork.db")
 
 templates = Jinja2Blocks(directory="templates")
 
@@ -35,12 +35,10 @@ class Work(SQLModel, table=True):
     date: (
         datetime.date
     )  # TODO: this field should auto transform from str to datetime.date
+    tag: str
     done: str
     todo: str
-
-    def convert_date_str_to_date(self):
-        if isinstance(self.date, str):
-            self.date = datetime.datetime.strptime(self.date, "%Y-%m-%d")
+    date_created: datetime.datetime = Field(default_factory=datetime.datetime.now)
 
 
 GetSession: Session = Depends(get_session)
@@ -48,7 +46,7 @@ GetSession: Session = Depends(get_session)
 
 class FormData(SQLModel):
     date: datetime.date
-    code: str
+    tag: str
     todo: str
     done: str
 
@@ -111,16 +109,6 @@ async def health_check():
         db_session = e
 
     return {"status": "ok", "database": db_session}
-
-
-@router.post("/new")
-async def save_new_work(record: Work, s: Session = GetSession):
-    record.convert_date_str_to_date()
-
-    s.add(record)
-    s.commit()
-    s.refresh(record)
-    return record
 
 
 app.include_router(router)
