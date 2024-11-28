@@ -53,6 +53,29 @@ class FormData(SQLModel):
     done: str
 
 
+class CRUD:
+    @staticmethod
+    async def create_new_work(s: Session, record: Work) -> None:
+        s.add(record)
+        s.commit()
+        s.refresh(record)
+
+    @staticmethod
+    async def delete_work(s: Session, id: int) -> None:
+        current = s.get(Work, id)
+        s.delete(current)
+        s.commit()
+
+    @staticmethod
+    async def get_all_works(s: Session) -> list[Work]:
+        query = select(Work).order_by(desc(Work.date_created))
+        recordlist = s.exec(query).all()
+        return recordlist
+
+
+SeessionDep: Session = Depends(get_session)
+
+
 @router.get("/", response_class=HTMLResponse)
 async def read_index(request: Request):
     return templates.TemplateResponse("base.html", {"request": request})
