@@ -84,15 +84,22 @@ async def read_index(request: Request, s: Session = SeessionDep):
     )
 
 
-@router.get("/new_test", response_class=HTMLResponse)
-async def read_index(request: Request):
-    return templates.TemplateResponse("create_work_form.html", {"request": request})
-
-
-@router.post("/test_form", response_class=HTMLResponse)
-async def test_form(request: Request, form_data: Annotated[FormData, Form()]):
+@router.post("/work", response_class=HTMLResponse)
+async def create_work(
+    request: Request, form_data: Annotated[FormData, Form()], s: Session = SeessionDep
+):
     assert request
-    return f"{'<br>'.join(f'{k}:{v}' for k, v in form_data.model_dump().items())} <hr>"
+    record = Work.model_validate(form_data)
+    await CRUD.create_new_work(s, record)
+    return templates.TemplateResponse(
+        "work_card.html", {"request": request, "record": record}
+    )
+
+
+@router.delete("/work/{id}", response_class=HTMLResponse)
+async def delete_work(id: int, s: Session = SeessionDep):
+    await CRUD.delete_work(s, id)
+    return HTMLResponse()
 
 
 @router.get("/health_check")
