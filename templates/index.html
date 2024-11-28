@@ -1,7 +1,7 @@
 {% extends "base.html" %}
-  {% block body %}
+{% block body %}
 
-<form hx-post="/test_form" hx-target="#form-response" hx-swap="afterbegin">
+<form hx-post="/work" hx-target="#form-response" hx-swap="afterbegin">
   <!-- Primeira linha -->
   <div class="row g-3 pb-2">
 
@@ -12,7 +12,7 @@
 
 
     <div class="col-sm">
-      <input class="form-control form-control-sm" type="text" name="code" placeholder="task/tag" aria-label=".form-control-lg example">
+      <input class="form-control form-control-sm" type="text" name="tag" placeholder="task/tag" aria-label=".form-control-lg example">
     </div>
 
   </div>
@@ -43,6 +43,27 @@
 </form>
 
 <!-- Local onde a resposta será exibida -->
-<div id="form-response"></div>
+<div id="form-response">
+  {% for record in recordlist %}
+  {% include "work_card.html" %}
+  {% endfor %}
+</div>
+
+<script>
+  // Function to resize a textarea to fit its content
+  function autoResizeTextarea(textarea) {
+    textarea.style.height = textarea.scrollHeight + 'px'; // Set to fit content
+  }
+
+  // Select all textareas in the document
+  document.querySelectorAll('textarea').forEach((textarea) => {
+    // Resize on page load
+    autoResizeTextarea(textarea);
+    
+
+    // Resize on input (typing or pasting)
+    textarea.addEventListener('htmx:afterSwap', () => autoResizeTextarea(textarea))
+  });
+</script>
 
 {% endblock %}
