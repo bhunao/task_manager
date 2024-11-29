@@ -39,9 +39,6 @@ class Work(SQLModel, table=True):
     date_created: datetime.datetime = Field(default_factory=datetime.datetime.now)
 
 
-GetSession: Session = Depends(get_session)
-
-
 class FormData(SQLModel):
     date: datetime.date
     tag: str
