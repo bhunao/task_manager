@@ -32,9 +32,7 @@ router = APIRouter()
 
 class Work(SQLModel, table=True):
     id: int | None = Field(primary_key=True, default=None)
-    date: (
-        datetime.date
-    )  # TODO: this field should auto transform from str to datetime.date
+    date: datetime.date
     tag: str
     done: str
     todo: str
