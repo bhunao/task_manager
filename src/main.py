@@ -1,27 +1,17 @@
 from contextlib import asynccontextmanager
-import datetime
 from typing import Annotated
+from collections.abc import AsyncIterator
+
 from fastapi import APIRouter, Depends, FastAPI, Form, Request
-from fastapi.staticfiles import StaticFiles
-
 from fastapi.responses import HTMLResponse
-from sqlmodel import Field, SQLModel, Session, create_engine, desc, select
-from jinja2_fragments.fastapi import Jinja2Blocks
+from fastapi.staticfiles import StaticFiles
+from sqlmodel import Session
 
-
-engine = create_engine("sqlite:///database_dailywork.db")
-
-templates = Jinja2Blocks(directory="templates")
-
-
-def get_session():
-    with Session(engine) as session:
-        SQLModel.metadata.create_all(engine)
-        yield session
+from src.config import CRUD, FormData, Work, get_session, templates
 
 
 @asynccontextmanager
-async def lifespan_event(app: FastAPI):
+async def lifespan_event(app: FastAPI) -> AsyncIterator[None]:
     assert app
     yield
 
@@ -31,42 +21,6 @@ app.mount("/static", StaticFiles(directory="static/"), name="static")
 
 
 router = APIRouter()
-
-
-class Work(SQLModel, table=True):
-    id: int | None = Field(primary_key=True, default=None)
-    date: datetime.date
-    tag: str
-    done: str
-    todo: str
-    date_created: datetime.datetime = Field(default_factory=datetime.datetime.now)
-
-
-class FormData(SQLModel):
-    date: datetime.date
-    tag: str
-    todo: str
-    done: str
-
-
-class CRUD:
-    @staticmethod
-    async def create_new_work(s: Session, record: Work) -> None:
-        s.add(record)
-        s.commit()
-        s.refresh(record)
-
-    @staticmethod
-    async def delete_work(s: Session, id: int) -> None:
-        current = s.get(Work, id)
-        s.delete(current)
-        s.commit()
-
-    @staticmethod
-    async def get_all_works(s: Session) -> list[Work]:
-        query = select(Work).order_by(desc(Work.date_created))
-        recordlist = s.exec(query).all()
-        return recordlist
 
 
 SeessionDep: Session = Depends(get_session)
