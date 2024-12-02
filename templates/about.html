@@ -1,0 +1,28 @@
+{% extends "base.html" %}
+{% block body %}
+<div class="container my-5">
+  <div class="row p-4 pb-0 pe-lg-0 pt-lg-5 align-items-center rounded-3 border shadow-lg">
+    <div class="col-lg-7 p-3 p-lg-5 pt-lg-3">
+      <h1 class="display-4 fw-bold lh-1">Track Your Progress, Unleash Your Potential</h1>
+      <h3>Your Personal Workday Companion</h3>
+      <p class="lead">
+        Transform how you document and reflect on your daily work. Capture your accomplishments, plan your next steps, and gain clarity with our simple, intuitive work tracking tool. Every day is an opportunity to grow, and now you have the perfect way to chronicle your professional journey.
+      </p>
+      <div class="d-grid gap-2 d-md-flex justify-content-md-start mb-4 mb-lg-3">
+        <a type="button" class="btn btn-primary btn-lg px-3 me-md-2 fw-bold" href="/">Start using...</a>
+        <a type="button" class="btn btn-outline-secondary btn-lg px-4" href="https://bhunao.github.io/bhunao/">Contact</a>
+      </div>
+    </div>
+    <div class="col-lg-4 offset-lg-1 p-0 overflow-hidden shadow-lg">
+      <img class="rounded-lg-3" src="/static/fake_calendar.png" alt="" width="720" title="" style="">
+    </div>
+  </div>
+</div>
+
+<div class="container">
+  <h5>Made with Love and FastAPI.</h5>
+  <p>
+    The website is simple is a single page application where you choose the date and a tag to write your work done and your work todo in a form. Data sent to the form will be validated and saved on the database and appear at the bottom of the form as a card with all the other "work_days".
+  </p>
+</div>
+{% endblock %}

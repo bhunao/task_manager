@@ -2,6 +2,7 @@ from contextlib import asynccontextmanager
 import datetime
 from typing import Annotated
 from fastapi import APIRouter, Depends, FastAPI, Form, Request
+from fastapi.staticfiles import StaticFiles
 
 from fastapi.responses import HTMLResponse
 from sqlmodel import Field, SQLModel, Session, create_engine, desc, select
@@ -26,6 +27,8 @@ async def lifespan_event(app: FastAPI):
 
 
 app = FastAPI(title="Daily Work")
+app.mount("/static", StaticFiles(directory="static/"), name="static")
+
 
 router = APIRouter()
 
@@ -104,6 +107,11 @@ async def health_check():
         db_session = e
 
     return {"status": "ok", "database": db_session}
+
+
+@router.get("/about")
+async def about_us(request: Request):
+    return templates.TemplateResponse("about.html", {"request": request})
 
 
 app.include_router(router)
