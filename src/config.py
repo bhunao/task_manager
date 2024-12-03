@@ -1,11 +1,13 @@
 import datetime
-from collections.abc import Generator
+from collections.abc import AsyncIterator, Generator
+from contextlib import asynccontextmanager
 
-from sqlmodel import Field, SQLModel, Session, create_engine, desc, select
+from fastapi import FastAPI
 from jinja2_fragments.fastapi import Jinja2Blocks
+from sqlmodel import Field, Session, SQLModel, create_engine, desc, select
 
-
-engine = create_engine("sqlite:///database_dailywork.db")
+DB_URL = "sqlite:///database_dailywork.db"
+engine = create_engine(DB_URL)
 templates = Jinja2Blocks(directory="templates")
 
 
@@ -13,6 +15,12 @@ def get_session() -> Generator[Session, None, None]:
     with Session(engine) as session:
         SQLModel.metadata.create_all(engine)
         yield session
+
+
+@asynccontextmanager
+async def lifespan_event(app: FastAPI) -> AsyncIterator[None]:
+    assert app
+    yield
 
 
 class Work(SQLModel, table=True):

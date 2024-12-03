@@ -1,27 +1,16 @@
-from contextlib import asynccontextmanager
 from typing import Annotated
-from collections.abc import AsyncIterator
 
 from fastapi import APIRouter, Depends, FastAPI, Form, Request
 from fastapi.responses import HTMLResponse
 from fastapi.staticfiles import StaticFiles
 from sqlmodel import Session
 
-from src.config import CRUD, FormData, Work, get_session, templates
+from src.config import CRUD, FormData, Work, get_session, lifespan_event, templates
 
-
-@asynccontextmanager
-async def lifespan_event(app: FastAPI) -> AsyncIterator[None]:
-    assert app
-    yield
-
-
-app = FastAPI(title="Daily Work")
+app = FastAPI(title="Daily Work", lifespan=lifespan_event)
 app.mount("/static", StaticFiles(directory="static/"), name="static")
 
-
 router = APIRouter()
-
 
 SeessionDep: Session = Depends(get_session)
 
