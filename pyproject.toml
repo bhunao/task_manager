@@ -5,7 +5,7 @@ description = "Add your description here"
 readme = "README.md"
 requires-python = ">=3.12"
 dependencies = [
-    "fastapi>=0.115.5",
+    "fastapi[standard]>=0.115.5",
     "jinja2-fragments>=1.6.0",
     "python-multipart>=0.0.17",
     "sqlmodel>=0.0.22",
